@@ -286,6 +286,15 @@ class TabManager {
         persistSnapshot()
     }
 
+    func splitTabs(_ tabId: UUID) {
+        print(tabId)
+        guard let spaceId = findSpaceForTab(tabId) else { return }
+        var tabs = tabsBySpace[spaceId] ?? []
+        guard let currentIndex = tabs.firstIndex(where: { $0.id == tabId }) else { return }
+        
+        
+    }
+    
     private func findSpaceForTab(_ tabId: UUID) -> UUID? {
         for (spaceId, tabs) in tabsBySpace {
             if tabs.contains(where: { $0.id == tabId }) {

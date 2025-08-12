@@ -19,6 +19,7 @@ struct SpaceView: View {
     let onPinTab: (Tab) -> Void
     let onMoveTabUp: (Tab) -> Void
     let onMoveTabDown: (Tab) -> Void
+    let onSplitTab: (Tab) -> Void
 
     var body: some View {
         VStack(spacing: 8) {
@@ -69,7 +70,18 @@ struct SpaceView: View {
                             } label: {
                                 Label("Close tab", systemImage: "xmark")
                             }
+
+                            Divider()
+                            
+                            Button {
+                                onSplitTab(tab)
+                            } label: {
+                                Label("Split tab", systemImage: "square.split.2x1")
+                            }
+
                         }
+                        .labelStyle(.titleAndIcon)   // <- forces icons to show
+
                         .onDrag {
                             NSItemProvider(
                                 object: tab.id.uuidString as NSString

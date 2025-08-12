@@ -110,5 +110,7 @@ private struct PinnedTile: View {
                 Label("Remove pinned tab", systemImage: "pin.slash")
             }
         }
+        .labelStyle(.titleAndIcon)   // <- forces icons to show
+
     }
 }

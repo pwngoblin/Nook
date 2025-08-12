@@ -8,6 +8,92 @@ struct SidebarView: View {
     @State private var spaceIcon = ""
     @State private var showHistory = false
 
+    fileprivate func fasz(proxy: ScrollViewProxy) -> HStack<ForEach<[Space], UUID, some View>> {
+        return HStack(alignment: .top, spacing: 0) {
+            ForEach(
+                browserManager.tabManager.spaces,
+                id: \.id
+            ) { space in
+                SpaceView(
+                    space: space,
+                    tabs: tabManagerTabs(in: space),
+                    isActive: browserManager.tabManager
+                        .currentSpace?.id == space.id,
+                    width: browserManager.sidebarWidth,
+                    onSetActive: {
+                        browserManager.tabManager
+                            .setActiveSpace(space)
+                        selectedSpaceID = space.id
+                        withAnimation(
+                            .easeInOut(duration: 0.25)
+                        ) {
+                            proxy.scrollTo(
+                                space.id,
+                                anchor: .center
+                            )
+                        }
+                    },
+                    onActivateTab: {
+                        browserManager.tabManager
+                            .setActiveTab(
+                                $0
+                            )
+                    },
+                    onCloseTab: {
+                        browserManager.tabManager.removeTab(
+                            $0.id
+                        )
+                    },
+                    onPinTab: {
+                        browserManager.tabManager.pinTab($0)
+                    },
+                    onMoveTabUp: {
+                        browserManager.tabManager.moveTabUp($0.id)
+                    },
+                    onMoveTabDown: {
+                        browserManager.tabManager.moveTabDown($0.id)
+                    },
+                    onSplitTab: {
+                        browserManager.tabManager.splitTabs($0.id)
+                     },
+                )
+                .id(space.id)
+                .frame(width: browserManager.sidebarWidth)
+                .scrollTargetLayout()
+            }
+        }
+    }
+    
+    fileprivate func extracted() -> ScrollViewReader<some View> {
+        return
+        ScrollViewReader { proxy in
+            ScrollView(.horizontal, showsIndicators: false) {
+                fasz(proxy: proxy)
+            }
+            .frame(width: browserManager.sidebarWidth)
+            .contentMargins(.horizontal, 0)
+            .scrollTargetBehavior(.viewAligned)
+            .onChange(
+                of: browserManager.tabManager.currentSpace?.id
+            ) {
+                _,
+                newID in
+                guard let newID else { return }
+                selectedSpaceID = newID
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    proxy.scrollTo(newID, anchor: .center)
+                }
+            }
+            .onAppear {
+                selectedSpaceID =
+                browserManager.tabManager.currentSpace?.id
+                if let id = selectedSpaceID {
+                    proxy.scrollTo(id, anchor: .center)
+                }
+            }
+        }
+    }
+    
     var body: some View {
         if browserManager.isSidebarVisible {
             ZStack {
@@ -38,82 +124,7 @@ struct SidebarView: View {
                                 removal: .move(edge: .leading).combined(with: .opacity)
                             ))
                     } else {
-                        // Spaces View - default view
-                        ScrollViewReader { proxy in
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(alignment: .top, spacing: 0) {
-                                    ForEach(
-                                        browserManager.tabManager.spaces,
-                                        id: \.id
-                                    ) { space in
-                                        SpaceView(
-                                            space: space,
-                                            tabs: tabManagerTabs(in: space),
-                                            isActive: browserManager.tabManager
-                                                .currentSpace?.id == space.id,
-                                            width: browserManager.sidebarWidth,
-                                            onSetActive: {
-                                                browserManager.tabManager
-                                                    .setActiveSpace(space)
-                                                selectedSpaceID = space.id
-                                                withAnimation(
-                                                    .easeInOut(duration: 0.25)
-                                                ) {
-                                                    proxy.scrollTo(
-                                                        space.id,
-                                                        anchor: .center
-                                                    )
-                                                }
-                                            },
-                                            onActivateTab: {
-                                                browserManager.tabManager
-                                                    .setActiveTab(
-                                                        $0
-                                                    )
-                                            },
-                                            onCloseTab: {
-                                                browserManager.tabManager.removeTab(
-                                                    $0.id
-                                                )
-                                            },
-                                            onPinTab: {
-                                                browserManager.tabManager.pinTab($0)
-                                            },
-                                            onMoveTabUp: {
-                                                browserManager.tabManager.moveTabUp($0.id)
-                                            },
-                                            onMoveTabDown: {
-                                                browserManager.tabManager.moveTabDown($0.id)
-                                            }
-                                        )
-                                        .id(space.id)
-                                        .frame(width: browserManager.sidebarWidth)
-                                        .scrollTargetLayout()
-                                    }
-                                }
-                            }
-                            .frame(width: browserManager.sidebarWidth)
-                            .contentMargins(.horizontal, 0)
-                            .scrollTargetBehavior(.viewAligned)
-                            .onChange(
-                                of: browserManager.tabManager.currentSpace?.id
-                            ) {
-                                _,
-                                newID in
-                                guard let newID else { return }
-                                selectedSpaceID = newID
-                                withAnimation(.easeInOut(duration: 0.25)) {
-                                    proxy.scrollTo(newID, anchor: .center)
-                                }
-                            }
-                            .onAppear {
-                                selectedSpaceID =
-                                    browserManager.tabManager.currentSpace?.id
-                                if let id = selectedSpaceID {
-                                    proxy.scrollTo(id, anchor: .center)
-                                }
-                            }
-                        }
+                        extracted()
                         .transition(.asymmetric(
                             insertion: .move(edge: .leading).combined(with: .opacity),
                             removal: .move(edge: .trailing).combined(with: .opacity)
