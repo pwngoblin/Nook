@@ -20,6 +20,8 @@ final class Persistence {
     }
 }
 
+enum SplitSide { case primary, secondary }
+
 
 @MainActor
 class BrowserManager: ObservableObject {
@@ -27,6 +29,8 @@ class BrowserManager: ObservableObject {
     @Published var isSidebarVisible: Bool = true
     @Published var isCommandPaletteVisible: Bool = false
     
+    @Published var focusedSplit: SplitSide = .primary
+
     var modelContext: ModelContext
     var tabManager: TabManager
     var settingsManager: SettingsManager

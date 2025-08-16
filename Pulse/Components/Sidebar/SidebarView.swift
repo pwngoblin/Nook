@@ -8,7 +8,7 @@ struct SidebarView: View {
     @State private var spaceIcon = ""
     @State private var showHistory = false
 
-    fileprivate func fasz(proxy: ScrollViewProxy) -> HStack<ForEach<[Space], UUID, some View>> {
+    fileprivate func test(proxy: ScrollViewProxy) -> HStack<ForEach<[Space], UUID, some View>> {
         return HStack(alignment: .top, spacing: 0) {
             ForEach(
                 browserManager.tabManager.spaces,
@@ -68,7 +68,7 @@ struct SidebarView: View {
         return
         ScrollViewReader { proxy in
             ScrollView(.horizontal, showsIndicators: false) {
-                fasz(proxy: proxy)
+                test(proxy: proxy)
             }
             .frame(width: browserManager.sidebarWidth)
             .contentMargins(.horizontal, 0)
