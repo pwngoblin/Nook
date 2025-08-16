@@ -287,11 +287,11 @@ class TabManager {
     }
 
     func splitTabs(_ tabId: UUID) {
-        print(tabId)
+        print("pressed split on \(tabId)")
         guard let spaceId = findSpaceForTab(tabId) else { return }
         var tabs = tabsBySpace[spaceId] ?? []
         guard let currentIndex = tabs.firstIndex(where: { $0.id == tabId }) else { return }
-        
+        browserManager?.tabManager.currentTab?.split = Tab(id: UUID(), url: URL(string: "apple.com")!, name: "cica", favicon: "nemkell", spaceId: UUID(), index: 0)
         
     }
     

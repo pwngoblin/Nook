@@ -20,7 +20,7 @@ public class Tab: NSObject, Identifiable {
     var favicon: SwiftUI.Image
     var spaceId: UUID?
     var index: Int
-
+    var split:Tab?
     // MARK: - Loading State
     enum LoadingState {
         case idle

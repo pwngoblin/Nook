@@ -10,21 +10,38 @@ import WebKit
 
 struct WebsiteView: View {
     @EnvironmentObject var browserManager: BrowserManager
-
+    let tab = Tab(id: UUID(), url: URL(string: "umszki.hu")!, name: "dd", favicon: "", spaceId: UUID(), index: 0)
     var body: some View {
         Group {
             if let currentTab = browserManager.tabManager.currentTab {
-                TabWebViewWrapper(tab: currentTab)
-                    .id(currentTab.id)
-                    .background(Color(nsColor: .windowBackgroundColor))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .clipShape(RoundedRectangle(cornerRadius: { 
-                        if #available(macOS 26.0, *) {
-                            return 12
-                        } else {
-                            return 6
-                        }
-                    }()))
+                HStack {
+                    TabWebViewWrapper(tab: currentTab)
+                        .id(currentTab.id)
+                        .background(Color(nsColor: .windowBackgroundColor))
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .clipShape(RoundedRectangle(cornerRadius: {
+                            if #available(macOS 26.0, *) {
+                                return 12
+                            } else {
+                                return 6
+                            }
+                        }()))
+                    if let split = currentTab.split {
+                        /*
+                        TabWebViewWrapper(tab: tab)
+                            .id(tab.id)
+                            .background(Color(nsColor: .windowBackgroundColor))
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .clipShape(RoundedRectangle(cornerRadius: {
+                                if #available(macOS 26.0, *) {
+                                    return 12
+                                } else {
+                                    return 6
+                                }
+                            }()))*/
+                        Text("c")
+                    }
+                }
             } else {
                 EmptyWebsiteView()
             }
